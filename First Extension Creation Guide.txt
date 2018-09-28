@@ -1,0 +1,268 @@
+/***********************************************************************************************************************************
+*                                                 GOD First                                                                        *
+* Author: Dustin Ledbetter                                                                                                         *
+* Release Date: 9-20-2018                                                                                                          *
+* Version: 1.0                                                                                                                     *
+* Purpose: This is for anyone who starts the path of learning how to create Pageflex extensions.                                   *
+************************************************************************************************************************************/
+
+
+//--------
+//INTRO:--
+//--------
+Hi, welcome to the journey:
+
+This guide was wrote by me as I went through the process of learning how to create pageflex extensions. I make no promises that this will give you the answers you need, 
+but I hope it will help those who get started and have no one else to look to for help. This guide will note where I started and what I used to learn how to create them. 
+I will also include my own guide to creating your first extension using the example from the book. 
+
+
+//------------------------------------------------
+//Programs and accesses used for this endeavor:--
+//------------------------------------------------
+ (How to get some of these is discussed below when needed)
+ 
+- Pageflex Programming Reference Guide (Version 8)
+- Working Pageflex Storefront
+- Visual Studio
+- Access to where the Storefront is stored
+- Admin account on the Storefront
+
+
+//-----------------------------------------------------------
+//STEP 1 (Look at the book regarding pageflex programming):--
+//-----------------------------------------------------------
+There are several document books that deal with Pageflex. The one that is important for extensions is the programming book 
+with the title: "Pageflex Programming Reference Guide".
+
+My suggestion is to read/skim through the book and get an idea of how it is setup. I will warn you now that it is quite vague and not setup in the easiest format to learn from.
+
+Some notes when you get started with the book:
+1. The book does not give you very many full examples of code in the chapters. You will have to figure out how and where to use the code given.
+
+2. The book mentions (on page 336) that there are two complete examples that come with the storefronts: "You will find them in the deployment’s “Programs\Tools\Storefront\Extensions\Samples” subfolder."
+   
+3. A Class Library project may contain only one Storefront extension.
+
+4. Each extension should do only one task. 
+
+
+//-------------------------------------------------------
+//Step 2 (Things required to setup our first extension)--
+//-------------------------------------------------------
+--Now that you have read/glanced through the book, lets get things setup for working with extensions
+
+
+1. You will need a storefront to use for testing.
+      
+2. Make sure you get a site that has a login, has a few items in the store, and has a checkout process.
+
+3. You will need to have a user created with admin access for you.
+
+4. Ensure that they are keeping backups of the site just in case.
+
+5. Create a new user (not admin) with the name "webster" and test to make sure he can login just fine.
+
+6. Keep his working login info handy for use with our first extension. 
+
+
+//---------------------------------------
+//Step 3 (creating our first extension)--
+//---------------------------------------
+--After you have read through the book you will notice that the extension development section starts at chapter 7 (Storefront API, page 321)
+Read through this section again if you'd like or at least use it for reference. I am going to take you step by step through what I did to setup my first extension. 
+This guide below is for creating an extension based on the one found on pages 325-332 in the book.
+
+
+Type of extension: This is an example of creating an extension to block a specified user from logging on to the storefront:
+
+Note: steps 4 and 6 below have pictures in the book on page 326
+
+
+1. Open visual studio
+
+2. In the New Project dialog box, select either the Visual Basic Projects or the Visual C# Projects folder. (I created mine using C# and my code will be shown as such)
+
+3. Click the Class Library icon.
+
+4. Choose a folder for this extension ("MyFirstExtension" is the name of mine) 
+
+5. Click OK to create the project.
+
+6. Rename your source file. 
+    - Make sure the Solution Explorer is visible
+    - Right click Class1.cs and select Rename from the popup menu
+    - Specify a new name for Class1.cs. The base name of the file will also become the name of your class. ("ExtensionOne" is the name of mine)
+    
+7. Add a Reference to StorefrontExtension.dll (We want to take advantage of the streamlined methods in the StorefrontExtension class, located in the provided StorefrontExtension.dll.)
+    - On the Project menu, click Add Reference.
+    - Select the Browse tab of the Add Reference dialog.
+    - Browse to your Storefront deployment’s WebPages\bin directory and select StorefrontExtension.dll.
+    - Click OK to close the Add Reference dialog.
+
+8. Inherit from StorefrontExtension
+    - Now change your main class derivation to the StorefrontExtension class and use the correct namespace. 
+    - For a C# Class Library, insert a “using” statement at the top of the file to use the Pageflex extension namespace, that is: "using Pageflex.Interfaces.Storefront;"
+    - And change the main class declaration from this: "public class MyExtension" to this: "public class MyExtension : StorefrontExtension"
+
+9. At a minimum your extension must override the DisplayName and UniqueName properties
+    - The DisplayName will be shown on the Extensions and Site Options pages of the Administrator site as the name of your module. 
+    - The UniqueName is used to associate a module with any data that it provides to Storefront. You cannot add two modules with the same Unique Name to a single deployment. 
+      The “Unique Name” should be a reverse-hierarchical dotted string, ending with your domain name. For example, “inventory.stock.ibuyprint.com” could be used to mean “Track the inventory of stock choices on the site ibuyprint.com”. 
+      These fields are not examined individually by Storefront, but maintaining a careful hierarchy is helpful in managing your modules. Note that SINI calls are not available in code for these properties.
+    - Be sure to manually compile your class library.
+  
+    *This is the code you will have once you override these methods:
+       
+    /*
+        // At a minimum your extension must override the DisplayName and UniqueName properties.
+
+
+        // The UniqueName is used to associate a module with any data that it provides to Storefront.
+        public override string UniqueName
+        {
+            get
+            {
+                return "ExtensionOne.logons.website.com";
+            }
+        }
+
+        // The DisplayName will be shown on the Extensions and Site Options pages of the Administrator site as the name of your module.
+        public override string DisplayName
+        {
+            get
+            {
+                return "Extension One";
+            }
+        }
+    */
+
+10. Add override method to handle an SXI event
+    - Inside the MyExtension class, type public override and press the spacebar. (Notice that Visual Studio pops up a list box with all the methods from StorefrontExtension.dll that you can override.)
+    - Scroll down the list and select the method you wish to override. (For our example, select "OrderPlace_Before")
+    
+    *This is the code you will have once you choose the "OrderPlace_Before" method:
+    
+    /*
+        public override int UserLogon_Before(string uid)
+        {
+            return base.UserLogon_Before(uid);
+        }
+    */
+      
+    - Notice that Visual Studio automatically pastes in the method and defaults to return the same return value as the base class (which tells Storefront that you don’t respond to this event). 
+    - Since you’ll be processing this event, you’ll want to control the return value. Now write your code:
+
+    *This is the code you will have once you edit the "OrderPlace_Before" method:
+    
+    /*
+        public override int UserLogon_Before(string uid)
+        {
+            string name;
+            name = Storefront.GetValue("UserProperty", "LogonName", uid);
+            if (name == "webster")
+                return eShouldAbort;
+            else
+                return eSuccess;
+        }
+    */
+    
+11. You now have your first extension. Here is my full example below:
+
+/***********************************************************************************************************************************
+*                                                 GOD First                                                                        *
+* Author: Dustin Ledbetter                                                                                                         *
+* Release Date: 9-19-2018                                                                                                          *
+* Version: 1.0                                                                                                                     *
+* Purpose: To create an extension for the storefront to test how they work                                                         *
+************************************************************************************************************************************/
+
+using Pageflex.Interfaces.Storefront;
+
+
+namespace MyFirstExtension
+{
+
+    public class ExtensionOne : StorefrontExtension
+    {
+
+        #region Extension Name Overides
+        // At a minimum your extension must override the DisplayName and UniqueName properties.
+
+
+        // The UniqueName is used to associate a module with any data that it provides to Storefront.
+        public override string UniqueName
+        {
+            get
+            {
+                return "ExtensionOne.logons.website.com";
+            }
+        }
+
+        // The DisplayName will be shown on the Extensions and Site Options pages of the Administrator site as the name of your module.
+        public override string DisplayName
+        {
+            get
+            {
+                return "Extension One";
+            }
+        }
+        #endregion
+
+
+        #region UserLogin_Before (called before the user is allowed to logon)
+        public override int UserLogon_Before(string uid)
+        {
+            string name;
+            name = Storefront.GetValue("UserProperty", "LogonName", uid);
+            if (name == "webster")
+                return eShouldAbort;
+            else
+                return eSuccess;
+        }
+        #endregion
+
+
+
+    //end of the class: ExtensionOne
+    }
+//end of the file
+}
+
+12. Once you have this you need to build the solution
+    - Select the build tab at the top
+    - Click build solution inside it
+    - Follow the path to your build. Mine was (\repos\MyFirstExtension\MyFirstExtension\bin\Debug)
+    
+    
+//----------------------------------------------------------------
+//Step 4 (Adding the extension to the storefront and testing it)--
+//----------------------------------------------------------------    
+       
+1. Place the build files into the deployed storefront
+    - You will need to copy the build files to the dll folder on the deployed storefront. (\yourStorefront\WebPages\bin\Extensions)
+    
+2. Login as an admin to the storefront online
+
+3. Click on the "administration" tab on the left
+
+4. Click on the "extensions" tab inside of the "administration" tab
+
+5. Click "add new" on this page
+
+6. Only type the name of the extension for the path as it should already be in the correct directory from step 1 above (example: myFirstExtension.dll)
+
+7. Make sure that our new extension is in the list of existing extensions.
+    - It should have a green check mark for being active and a status of ok.
+    - You should see where the name now shows with the name we provided in the override here as well
+    
+8. Test the extension out.
+    - Logout and return to the site login page
+    - Now is the point you will need the login info for "webster" we created earlier
+    - Enter the login info for webster correctly and see that the site will now say that it is not a valid access combination
+    
+9. You can turn the extension on and off to see that it works.
+
+10. Congrats you have now created and tested your first extension for Pageflex.
+
+
