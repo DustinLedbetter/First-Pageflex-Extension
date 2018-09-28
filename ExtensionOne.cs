@@ -1,9 +1,9 @@
-﻿/***********************************************************************************************************************************
+/***********************************************************************************************************************************
 *                                                 GOD First                                                                        *
 * Author: Dustin Ledbetter                                                                                                         *
 * Release Date: 9-19-2018                                                                                                          *
 * Version: 1.0                                                                                                                     *
-* Purpose: To create an extension for the storefront to test how they work                                               *
+* Purpose: To create an extension for the storefront to test how they work                                                         *
 ************************************************************************************************************************************/
 
 using Pageflex.Interfaces.Storefront;
@@ -15,7 +15,7 @@ namespace MyFirstExtension
     public class ExtensionOne : StorefrontExtension
     {
 
-        #region Extension Name Overides
+        #region Extension Name Overrides
         // At a minimum your extension must override the DisplayName and UniqueName properties.
 
 
@@ -24,7 +24,7 @@ namespace MyFirstExtension
         {
             get
             {
-                return "ExtensionOne.logons.#####.com";
+                return "ExtensionOne.logons.website.com";
             }
         }
 
@@ -44,7 +44,7 @@ namespace MyFirstExtension
         {
             string name;
             name = Storefront.GetValue("UserProperty", "LogonName", uid);
-            if (name == "#####")
+            if (name == "webster")
                 return eShouldAbort;
             else
                 return eSuccess;
